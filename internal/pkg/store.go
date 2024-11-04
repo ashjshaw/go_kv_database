@@ -12,7 +12,10 @@ type Store struct {
 }
 
 func NewStore() *Store {
-	panic("NYI")
+	return &Store{
+		data: map[string]string{},
+		mu:   sync.RWMutex{},
+	}
 }
 
 func (s *Store) Get(key string) ([]string, bool) {

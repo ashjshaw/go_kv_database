@@ -10,6 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewStore(t *testing.T) {
+	t.Run("Create new Store", func(t *testing.T) {
+		newStore := NewStore()
+		assert.NotNil(t, newStore)
+	})
+}
+
 func TestStore(t *testing.T) {
 	testStore := &Store{
 		data: map[string]string{},
