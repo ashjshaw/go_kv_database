@@ -17,7 +17,11 @@ func New(*Handler) {
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
-	value, _ := h.Get(key)
+	value, exists := h.Get(key)
+	if !exists {
+		http.Error(w, "key not found", http.StatusNotFound)
+		return
+	}
 	jsonData, err := json.Marshal(value)
 	if err != nil {
 		http.Error(w, "error encoding json", http.StatusInternalServerError)

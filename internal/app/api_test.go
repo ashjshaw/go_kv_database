@@ -69,7 +69,7 @@ func TestHandler_GetHandler(t *testing.T) {
 				w: httptest.NewRecorder(),
 				r: httptest.NewRequest(http.MethodGet, "/invalidKey", nil),
 			},
-			want:           "key not found",
+			want:           "key not found\n",
 			wantStatusCode: 404,
 			calls: calls{
 				getCalls: 1,
