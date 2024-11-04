@@ -16,7 +16,9 @@ func (s *Store) Get(key string) ([]string, bool) {
 }
 
 func (s *Store) Put(key, value string) {
-	panic("NYI")
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.data[key] = value
 }
 
 func (s *Store) Delete(key string) bool {
