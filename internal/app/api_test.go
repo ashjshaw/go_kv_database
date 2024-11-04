@@ -41,6 +41,23 @@ func TestHandler_GetHandler(t *testing.T) {
 				getCalls: 1,
 			},
 		},
+		{
+			name: "When given an empty key all keys are returned",
+			h: &Handler{
+				Get: func(key string) ([]string, bool) {
+					return []string{"key1", "key2"}, true
+				},
+			},
+			args: args{
+				w: httptest.NewRecorder(),
+				r: httptest.NewRequest(http.MethodGet, "/", nil),
+			},
+			want:           "[\"key1\",\"key2\"]",
+			wantStatusCode: 200,
+			calls: calls{
+				getCalls: 1,
+			},
+		},
 	}
 	for _, tt := range tests {
 		calls := calls{}
