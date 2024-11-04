@@ -44,5 +44,10 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	panic("NYI")
+	key := r.URL.Query().Get("key")
+	h.Delete(key)
+	w.WriteHeader(http.StatusOK)
+	responseString := key + " removed successfully from store"
+	w.Write([]byte(responseString))
+
 }

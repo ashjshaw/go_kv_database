@@ -196,8 +196,9 @@ func TestHandler_DeleteHandler(t *testing.T) {
 	for _, tt := range tests {
 		calls := calls{}
 		h := &Handler{
-			Put: func(key, value string) {
+			Delete: func(key string) bool {
 				calls.deleteCalls++
+				return tt.h.Delete(key)
 			},
 		}
 		t.Run(tt.name, func(t *testing.T) {
