@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	store "github.com/ashjshaw/go_kv_database/internal/pkg"
+	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -23,7 +24,7 @@ func New() *Handler {
 }
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := mux.Vars(r)["key"]
 	value, exists := h.Get(key)
 	if !exists {
 		http.Error(w, "key not found", http.StatusNotFound)
@@ -39,7 +40,7 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := mux.Vars(r)["key"]
 	value := ""
 	if err := json.NewDecoder(r.Body).Decode(&value); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
@@ -51,7 +52,7 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := mux.Vars(r)["key"]
 	if exists := h.Delete(key); !exists {
 		errorString := key + " not found in store"
 		http.Error(w, errorString, http.StatusNotFound)
