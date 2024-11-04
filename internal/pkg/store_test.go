@@ -3,6 +3,7 @@ package store
 import (
 	"reflect"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 
@@ -45,6 +46,19 @@ func TestStore__Put_and_Get(t *testing.T) {
 				}
 			}(i)
 		}
+
+		t.Run("testing for false response from invalidKey", func(t *testing.T) {
+			testFalse, boolResponse := testStore.Get("invalidKey")
+			assert.Nil(t, testFalse)
+			if boolResponse {
+				t.Errorf("Store.Get(), got = %v, want = %v", boolResponse, false)
+			}
+		})
+		t.Run("testing for all keys when empty string given to get", func(t *testing.T) {
+			testAll, _ := testStore.Get("")
+			assert.Equal(t, len(testAll), 100)
+			assert.True(t, strings.Contains(testAll[0], "key"))
+		})
 	})
 }
 
