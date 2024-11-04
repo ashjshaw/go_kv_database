@@ -1,53 +1,33 @@
 package store
 
 import (
-	"reflect"
+	"strconv"
+	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestStore_Get(t *testing.T) {
-	type args struct {
-		key string
+func TestStore__Put_and_Get(t *testing.T) {
+	testStore := &Store{
+		data: map[string]string{},
+		mu:   sync.RWMutex{},
 	}
-	tests := []struct {
-		name  string
-		s     *Store
-		args  args
-		want  []string
-		want1 bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := tt.s.Get(tt.args.key)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Store.Get() got = %v, want %v", got, tt.want)
-			}
-			if got1 != tt.want1 {
-				t.Errorf("Store.Get() got1 = %v, want %v", got1, tt.want1)
-			}
-		})
-	}
-}
 
-func TestStore_Put(t *testing.T) {
-	type args struct {
-		key   string
-		value string
-	}
-	tests := []struct {
-		name string
-		s    *Store
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tt.s.Put(tt.args.key, tt.args.value)
-		})
-	}
+	var wg sync.WaitGroup
+
+	t.Run("testing 100 Concurrent Put requests", func(t *testing.T) {
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				n := strconv.Itoa(i)
+				testStore.Put("key"+n, "value"+n)
+			}(i)
+		}
+		wg.Wait()
+		assert.Equal(t, len(testStore.data), 100)
+	})
 }
 
 func TestStore_Delete(t *testing.T) {
