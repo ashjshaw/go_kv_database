@@ -32,7 +32,14 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
-	panic("NYI")
+	key := r.URL.Query().Get("key")
+	value := ""
+	if err := json.NewDecoder(r.Body).Decode(&value); err != nil {
+		return
+	}
+	h.Put(key, value)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("request successful, information added to data store"))
 }
 
 func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
