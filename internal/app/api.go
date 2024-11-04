@@ -35,6 +35,7 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
 	value := ""
 	if err := json.NewDecoder(r.Body).Decode(&value); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 	h.Put(key, value)
