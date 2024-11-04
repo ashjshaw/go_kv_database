@@ -1,6 +1,10 @@
 package store
 
-import "sync"
+import (
+	"maps"
+	"slices"
+	"sync"
+)
 
 type Store struct {
 	data map[string]string
@@ -14,6 +18,9 @@ func NewStore() *Store {
 func (s *Store) Get(key string) ([]string, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	if key == "" {
+		return slices.Collect(maps.Keys(s.data)), true
+	}
 	if value, ok := s.data[key]; ok {
 		return []string{value}, true
 	}
