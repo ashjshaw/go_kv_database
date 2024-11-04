@@ -45,7 +45,11 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
-	h.Delete(key)
+	if exists := h.Delete(key); !exists {
+		errorString := key + " not found in store"
+		http.Error(w, errorString, http.StatusNotFound)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	responseString := key + " removed successfully from store"
 	w.Write([]byte(responseString))
