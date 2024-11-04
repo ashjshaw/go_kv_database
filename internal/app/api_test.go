@@ -58,6 +58,23 @@ func TestHandler_GetHandler(t *testing.T) {
 				getCalls: 1,
 			},
 		},
+		{
+			name: "when given an invalid key, 404 response sent",
+			h: &Handler{
+				Get: func(key string) ([]string, bool) {
+					return nil, false
+				},
+			},
+			args: args{
+				w: httptest.NewRecorder(),
+				r: httptest.NewRequest(http.MethodGet, "/invalidKey", nil),
+			},
+			want:           "key not found",
+			wantStatusCode: 404,
+			calls: calls{
+				getCalls: 1,
+			},
+		},
 	}
 	for _, tt := range tests {
 		calls := calls{}
