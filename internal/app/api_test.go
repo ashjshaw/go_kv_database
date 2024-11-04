@@ -158,3 +158,58 @@ func TestHandler_PutHandler(t *testing.T) {
 		})
 	}
 }
+
+func TestHandler_DeleteHandler(t *testing.T) {
+	type args struct {
+		w *httptest.ResponseRecorder
+		r *http.Request
+	}
+	type calls struct {
+		deleteCalls int
+	}
+	tests := []struct {
+		name           string
+		h              *Handler
+		args           args
+		want           string
+		wantStatusCode int
+		calls          calls
+	}{
+		{
+			name: "When given a valid key, deletes successfully and returns 200 status code",
+			h: &Handler{
+				Delete: func(key string) bool {
+					return true
+				},
+			},
+			args: args{
+				w: httptest.NewRecorder(),
+				r: httptest.NewRequest(http.MethodDelete, "/key1", nil),
+			},
+			want:           " removed successfully from store",
+			wantStatusCode: 200,
+			calls: calls{
+				deleteCalls: 1,
+			},
+		},
+	}
+	for _, tt := range tests {
+		calls := calls{}
+		h := &Handler{
+			Put: func(key, value string) {
+				calls.deleteCalls++
+			},
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			h.DeleteHandler(tt.args.w, tt.args.r)
+			resp := tt.args.w
+			if resp.Result().StatusCode != tt.wantStatusCode {
+				t.Errorf("h.DeleteStatusCode= got %v, want %v", resp.Result().StatusCode, tt.want)
+			}
+			if resp.Body.String() != tt.want {
+				t.Errorf("h.DeleteHandler= got %v, want %v", resp.Body.String(), tt.want)
+			}
+			assert.Equal(t, calls, tt.calls)
+		})
+	}
+}
