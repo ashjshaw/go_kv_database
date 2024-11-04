@@ -12,7 +12,12 @@ func NewStore() *Store {
 }
 
 func (s *Store) Get(key string) ([]string, bool) {
-	panic("NYI")
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if value, ok := s.data[key]; ok {
+		return []string{value}, true
+	}
+	return nil, false
 }
 
 func (s *Store) Put(key, value string) {
