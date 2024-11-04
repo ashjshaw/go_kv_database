@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStore__Put_and_Get(t *testing.T) {
+func TestStore(t *testing.T) {
 	testStore := &Store{
 		data: map[string]string{},
 		mu:   sync.RWMutex{},
@@ -45,6 +45,7 @@ func TestStore__Put_and_Get(t *testing.T) {
 					t.Errorf("Store.Get(), got = %v, want = %v", boolResponse, true)
 				}
 			}(i)
+			wg.Wait()
 		}
 
 		t.Run("testing for false response from invalidKey", func(t *testing.T) {
@@ -60,25 +61,24 @@ func TestStore__Put_and_Get(t *testing.T) {
 			assert.True(t, strings.Contains(testAll[0], "key"))
 		})
 	})
-}
 
-func TestStore_Delete(t *testing.T) {
-	type args struct {
-		key string
-	}
-	tests := []struct {
-		name string
-		s    *Store
-		args args
-		want bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.Delete(tt.args.key); got != tt.want {
-				t.Errorf("Store.Delete() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	t.Run("testing 100 Concurrent Delete Requests", func(t *testing.T) {
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				n := strconv.Itoa(i)
+				boolResponse := testStore.Delete("key" + n)
+				if !boolResponse {
+					t.Errorf("Store.Get(), got = %v, want = %v", boolResponse, true)
+				}
+			}(i)
+		}
+		wg.Wait()
+		assert.Equal(t, len(testStore.data), 0)
+	})
+
+	t.Run("When given an invalidKey, delete returns false", func(t *testing.T) {
+		assert.False(t, testStore.Delete("invalidKey"))
+	})
 }
