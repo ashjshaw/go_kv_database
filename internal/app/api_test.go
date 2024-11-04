@@ -126,6 +126,17 @@ func TestHandler_PutHandler(t *testing.T) {
 				putCalls: 1,
 			},
 		},
+		{
+			name: "When given an invalid json, 400 status code is returned",
+			args: args{
+				w: httptest.NewRecorder(),
+				r: httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer([]byte(`{}"value1"}`))),
+			}, want: "invalid request body\n",
+			wantStatusCode: 400,
+			calls: calls{
+				putCalls: 0,
+			},
+		},
 	}
 	for _, tt := range tests {
 		calls := calls{}
