@@ -34,5 +34,11 @@ func (s *Store) Put(key, value string) {
 }
 
 func (s *Store) Delete(key string) bool {
-	panic("NYI")
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	_, ok := s.data[key]
+	if ok {
+		delete(s.data, key)
+	}
+	return ok
 }
