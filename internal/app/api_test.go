@@ -192,6 +192,23 @@ func TestHandler_DeleteHandler(t *testing.T) {
 				deleteCalls: 1,
 			},
 		},
+		{
+			name: "given an invalidKey, 404 status code returned",
+			h: &Handler{
+				Delete: func(key string) bool {
+					return false
+				},
+			},
+			args: args{
+				w: httptest.NewRecorder(),
+				r: httptest.NewRequest(http.MethodDelete, "/key1", nil),
+			},
+			want:           " not found in store\n",
+			wantStatusCode: 404,
+			calls: calls{
+				deleteCalls: 1,
+			},
+		},
 	}
 	for _, tt := range tests {
 		calls := calls{}
