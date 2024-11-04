@@ -1,6 +1,7 @@
 package store
 
 import (
+	"reflect"
 	"strconv"
 	"sync"
 	"testing"
@@ -27,6 +28,23 @@ func TestStore__Put_and_Get(t *testing.T) {
 		}
 		wg.Wait()
 		assert.Equal(t, len(testStore.data), 100)
+	})
+
+	t.Run("testing 100 Concurrent Get Requests", func(t *testing.T) {
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				n := strconv.Itoa(i)
+				got, boolResponse := testStore.Get("key" + n)
+				if !reflect.DeepEqual(got, []string{"value" + n}) {
+					t.Errorf("Store.Get(), got = %v, want = %v", got, []string{"value" + n})
+				}
+				if !boolResponse {
+					t.Errorf("Store.Get(), got = %v, want = %v", boolResponse, true)
+				}
+			}(i)
+		}
 	})
 }
 
