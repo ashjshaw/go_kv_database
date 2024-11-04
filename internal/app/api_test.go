@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNew(t *testing.T) {
+	got := New()
+	assert.NotNil(t, got)
+}
+
 func TestHandler_GetHandler(t *testing.T) {
 	type args struct {
 		w *httptest.ResponseRecorder

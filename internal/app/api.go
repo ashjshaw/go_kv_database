@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+
+	store "github.com/ashjshaw/go_kv_database/internal/pkg"
 )
 
 type Handler struct {
@@ -11,8 +13,13 @@ type Handler struct {
 	Delete func(key string) bool
 }
 
-func New(*Handler) {
-	panic("NYI")
+func New() *Handler {
+	store := store.NewStore()
+	newHandler := &Handler{}
+	newHandler.Get = store.Get
+	newHandler.Put = store.Put
+	newHandler.Delete = store.Delete
+	return newHandler
 }
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
