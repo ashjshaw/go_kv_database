@@ -1,6 +1,9 @@
 package api
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type Handler struct {
 	Get    func(key string) ([]string, bool)
@@ -13,7 +16,15 @@ func New(*Handler) {
 }
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
-	panic("NYI")
+	key := r.URL.Query().Get("key")
+	value, _ := h.Get(key)
+	jsonData, err := json.Marshal(value)
+	if err != nil {
+		http.Error(w, "error encoding json", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader((http.StatusOK))
+	w.Write(jsonData)
 }
 
 func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
